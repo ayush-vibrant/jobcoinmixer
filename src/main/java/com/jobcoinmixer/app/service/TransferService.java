@@ -33,24 +33,28 @@ public class TransferService {
     @Autowired
     private final ApplicationProperties applicationProperties;
 
-    public void initiateWithdrawal(String depositAddress) {
+    public void initiateWithdrawal(String depositAddress) throws DepositNotFoundException {
         // Fetch the deposit from the database
         Deposit deposit = depositService.getDepositByAddress(depositAddress);
 
-        // Fetch the withdrawal addresses and amount from the deposit
-        List<String> withdrawalAddresses = deposit.getWithdrawalAddresses();
-        BigDecimal amount = deposit.getAmount();
+        if (deposit != null) {
+            // Fetch the withdrawal addresses and amount from the deposit
+            List<String> withdrawalAddresses = deposit.getWithdrawalAddresses();
+            BigDecimal amount = deposit.getAmount();
 
-        // Deduct fees based on the defined strategy
-        BigDecimal fee = calculateFee(amount, withdrawalAddresses.size());
+            // Deduct fees based on the defined strategy
+            BigDecimal fee = calculateFee(amount, withdrawalAddresses.size());
 
-        // Update the total fee in the fee collection table
-        recordFeeCollection(depositAddress, fee);
+            // Update the total fee in the fee collection table
+            recordFeeCollection(depositAddress, fee);
 
-        BigDecimal remainingAmount = amount.subtract(fee);
+            BigDecimal remainingAmount = amount.subtract(fee);
 
-        // Transfer the remaining Jobcoins to the withdrawal addresses
-        transferToWithdrawalAddresses(depositAddress, remainingAmount, withdrawalAddresses);
+            // Transfer the remaining Jobcoins to the withdrawal addresses
+            transferToWithdrawalAddresses(depositAddress, remainingAmount, withdrawalAddresses);
+        } else {
+            throw new DepositNotFoundException("Deposit not found");
+        }
     }
 
     private void recordFeeCollection(String depositAddress, BigDecimal fee) {
@@ -82,7 +86,7 @@ public class TransferService {
             BigDecimal installmentAmount = generateInstallmentAmount(remainingAmount, withdrawalAddresses.size() - i, random);
             remainingAmount = remainingAmount.subtract(installmentAmount);
 
-            int delaySeconds = i/100;
+            int delaySeconds = i / 100;
             executorService.schedule(() -> {
                 transferJobcoinsToWithdrawalAddress(depositAddress, applicationProperties.getHouseAddress(),
                         withdrawalAddress, installmentAmount);
