@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-
+import java.math.BigDecimal;
 @Data
 @Entity
 @Table(name = "house_account")
@@ -16,6 +16,6 @@ public class HouseAccount {
     private String houseAddress;
 
     @Column(name = "total_amount")
-    private Integer totalAmount;
+    private BigDecimal totalAmount;
 
 }
