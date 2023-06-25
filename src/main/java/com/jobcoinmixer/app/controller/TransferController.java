@@ -19,10 +19,12 @@ public class TransferController {
     }
 
     @PostMapping("/transfer-to-house-address")
-    public ResponseEntity<Void> transferToHouseAccount() {
+    public ResponseEntity<ApiResponse> transferToHouseAccount() {
         BigDecimal totalAmountTransferred = transferService.transferToHouseAddress();
-        System.out.println("Transferred total amount to house address: " + totalAmountTransferred);
-        return ResponseEntity.ok().build();
+
+        // Return the success response
+        ApiResponse response = new ApiResponse("success");
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/transfer-to-deposit-address")
