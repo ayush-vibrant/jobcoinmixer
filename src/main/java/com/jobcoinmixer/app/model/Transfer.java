@@ -3,6 +3,8 @@ package com.jobcoinmixer.app.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 
 @Data
 @Entity
@@ -17,7 +19,7 @@ public class Transfer {
     private String withdrawalWalletAddress;
 
     @Column(name = "amount")
-    private Integer amount;
+    private BigDecimal amount;
 
     @Column(name = "status")
     private String status;
