@@ -30,6 +30,11 @@ public class WithdrawalController {
     /**
      * Initiates a withdrawal for the specified deposit address.
      *
+     * NOTE: Ideally in production, this should be a scheduled operation or a delay based operation that
+     * user chooses at the time of giving his withdrawal addresses.
+     * For now, I am mimicking this behavior by API call.
+     *
+     *
      * @param withdrawalRequest the WithdrawalRequest containing the deposit address for withdrawal
      * @return a ResponseEntity containing the list of WithdrawalDetail indicating the success of the withdrawal
      */

@@ -27,7 +27,9 @@ public class TransferController {
     /**
      * Transfers Jobcoins to the house account.
      *
-     * @return a ResponseEntity containing the ApiResponse indicating the success of the transfer
+     * NOTE: Ideally in production, this should be a scheduled operation. For now, I am mimicking this behavior by API call.
+     *
+     * @return A ResponseEntity containing the ApiResponse indicating the success of the transfer
      */
     @PostMapping(Paths.TRANSFER_TO_HOUSE_ADDRESS)
     public ResponseEntity<ApiResponse> transferToHouseAccount() {
