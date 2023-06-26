@@ -3,7 +3,10 @@ package com.jobcoinmixer.app.repository;
 import com.jobcoinmixer.app.dto.DepositStatus;
 import com.jobcoinmixer.app.model.Deposit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +24,9 @@ public interface DepositRepository extends JpaRepository<Deposit, String> {
      */
     Deposit findByDepositAddress(String depositAddress);
     List<Deposit> findByStatus(DepositStatus status);
+    @Transactional
+    @Modifying
+    @Query("UPDATE Deposit d SET d.status = :newStatus WHERE d.depositAddress = :depositAddress")
     void updateStatusByDepositAddress(String depositAddress, DepositStatus newStatus);
 
 }
