@@ -1,6 +1,7 @@
 package com.jobcoinmixer.app.service;
 
 import com.jobcoinmixer.app.config.ApplicationProperties;
+import com.jobcoinmixer.app.dto.DepositStatus;
 import com.jobcoinmixer.app.dto.TransferStatus;
 import com.jobcoinmixer.app.dto.WithdrawalDetail;
 import com.jobcoinmixer.app.exception.DepositNotFoundException;
@@ -73,7 +74,7 @@ public class TransferService {
      * @param fee            the fee amount
      */
 
-    private void recordFeeCollection(String depositAddress, BigDecimal fee) {
+    public void recordFeeCollection(String depositAddress, BigDecimal fee) {
         Fee feeRecord = new Fee();
         feeRecord.setDepositAddress(depositAddress);
         feeRecord.setTotalFee(fee);
@@ -88,7 +89,7 @@ public class TransferService {
      * @param amount              the amount to be transferred
      * @param withdrawalAddresses the withdrawal addresses
      */
-    private void transferToWithdrawalAddresses(String depositAddress, BigDecimal amount, List<String> withdrawalAddresses) {
+    public void transferToWithdrawalAddresses(String depositAddress, BigDecimal amount, List<String> withdrawalAddresses) {
         BigDecimal remainingAmount = amount;
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         Random random = new Random();
@@ -112,14 +113,14 @@ public class TransferService {
     /**
      * Transfers the specified amount of Jobcoins from the house address to the withdrawal address.
      *
-     * @param depositAddress     the deposit address
-     * @param houseAddress       the house address
-     * @param withdrawalAddress  the withdrawal address
-     * @param installmentAmount  the amount of Jobcoins to be transferred
+     * @param depositAddress    the deposit address
+     * @param houseAddress      the house address
+     * @param withdrawalAddress the withdrawal address
+     * @param installmentAmount the amount of Jobcoins to be transferred
      */
 
-    private void transferJobcoinsToWithdrawalAddress(String depositAddress, String houseAddress,
-                                                     String withdrawalAddress, BigDecimal installmentAmount) {
+    public void transferJobcoinsToWithdrawalAddress(String depositAddress, String houseAddress,
+                                                    String withdrawalAddress, BigDecimal installmentAmount) {
         // Should use SLF4J for logging instead of System.out.println
         System.out.println("Transferring " + installmentAmount + " Jobcoins from " + houseAddress + " to " + withdrawalAddress);
 
@@ -135,7 +136,7 @@ public class TransferService {
      * @param random             the random number generator
      * @return the generated installment amount
      */
-    private BigDecimal generateInstallmentAmount(BigDecimal remainingAmount, int remainingAddresses, Random random) {
+    public BigDecimal generateInstallmentAmount(BigDecimal remainingAmount, int remainingAddresses, Random random) {
         if (remainingAddresses == 1) {
             // Return the remaining amount for the last address
             return remainingAmount;
@@ -163,8 +164,8 @@ public class TransferService {
      * @param status                  the status of the transfer
      * @param depositAddress          the deposit address
      */
-    private void updateTransferTable(String withdrawalWalletAddress, BigDecimal amount,
-                                     TransferStatus status, String depositAddress) {
+    public void updateTransferTable(String withdrawalWalletAddress, BigDecimal amount,
+                                    TransferStatus status, String depositAddress) {
         Transfer transfer = new Transfer();
         transfer.setWithdrawalWalletAddress(withdrawalWalletAddress);
         transfer.setAmount(amount);
@@ -188,6 +189,7 @@ public class TransferService {
             BigDecimal currentAmount = deposit.getAmount();
             BigDecimal newAmount = currentAmount.add(amount);
             deposit.setAmount(newAmount);
+            deposit.setStatus(DepositStatus.TRANSFERRED);
             depositService.save(deposit);
         } else {
             throw new DepositNotFoundException("Deposit address not found: " + to);
@@ -205,20 +207,22 @@ public class TransferService {
 
     public BigDecimal transferToHouseAddress() {
         // Get all the deposits
-        List<Deposit> deposits = depositService.getAllDeposits();
+        List<Deposit> deposits = depositService.getDepositsByStatus(DepositStatus.TRANSFERRED);
 
         // Get the total amount from the deposits
-        BigDecimal totalAmountTransferred = depositService.calculateTotalAmount(deposits);
+        BigDecimal totalAmountTransferred = calculateTotalAmount(deposits);
 
         // Update the house account with the transferred amount
         houseAccountService.addAmountToHouseAccount(totalAmountTransferred);
-        System.out.println("Transferred " + totalAmountTransferred +
+        System.out.println("Transferred total " + totalAmountTransferred +
                 " Jobcoins to house address: " + applicationProperties.getHouseAddress());
 
-        // Log the transfer details for each deposit address
-        deposits.forEach(deposit ->
-                System.out.println("Transferred amount from " +
-                        deposit.getDepositAddress() + " to house address: " + deposit.getAmount())
+        // Update status of the deposits to MOVED_TO_HOUSE and Log the transfer details
+        deposits.forEach(deposit -> {
+                    depositService.updateStatusByDepositAddress(deposit.getDepositAddress(), DepositStatus.MOVED_TO_HOUSE);
+                    System.out.println("Transferred amount from " +
+                            deposit.getDepositAddress() + " to house address: " + deposit.getAmount());
+                }
         );
 
         return totalAmountTransferred;
@@ -243,6 +247,20 @@ public class TransferService {
                     return withdrawalDetail;
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Calculates the total amount from a list of deposits.
+     *
+     * @param deposits the list of deposits
+     * @return the total amount
+     */
+    private BigDecimal calculateTotalAmount(List<Deposit> deposits) {
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        for (Deposit deposit : deposits) {
+            totalAmount = totalAmount.add(deposit.getAmount());
+        }
+        return totalAmount;
     }
 
 }

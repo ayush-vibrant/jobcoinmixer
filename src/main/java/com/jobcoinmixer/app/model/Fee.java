@@ -1,7 +1,9 @@
 package com.jobcoinmixer.app.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
@@ -11,6 +13,8 @@ import java.math.BigDecimal;
 @Data
 @Entity
 @Table(name = "fee_collection")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Fee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,4 +26,9 @@ public class Fee {
 
     @Column(name = "total_fee")
     private BigDecimal totalFee;
+
+    public Fee(String depositAddress, BigDecimal totalFee) {
+        this.depositAddress = depositAddress;
+        this.totalFee = totalFee;
+    }
 }
