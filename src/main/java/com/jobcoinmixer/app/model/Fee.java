@@ -5,7 +5,9 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
-
+/**
+ * Represents a fee collection in the Jobcoin mixing application.
+ */
 @Data
 @Entity
 @Table(name = "fee_collection")
@@ -20,5 +22,4 @@ public class Fee {
 
     @Column(name = "total_fee")
     private BigDecimal totalFee;
-
 }

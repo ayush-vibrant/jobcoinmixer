@@ -21,6 +21,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+/**
+ * Service class for managing transfers of Jobcoins.
+ */
 @Service
 @AllArgsConstructor
 public class TransferService {
@@ -33,6 +36,12 @@ public class TransferService {
     @Autowired
     private final ApplicationProperties applicationProperties;
 
+    /**
+     * Initiates the withdrawal process for the specified deposit address.
+     *
+     * @param depositAddress the deposit address
+     * @throws DepositNotFoundException if the deposit is not found
+     */
     public void initiateWithdrawal(String depositAddress) throws DepositNotFoundException {
         // Fetch the deposit from the database
         Deposit deposit = depositService.getDepositByAddress(depositAddress);
@@ -57,6 +66,13 @@ public class TransferService {
         }
     }
 
+    /**
+     * Records the fee collection for the specified deposit address.
+     *
+     * @param depositAddress the deposit address
+     * @param fee            the fee amount
+     */
+
     private void recordFeeCollection(String depositAddress, BigDecimal fee) {
         Fee feeRecord = new Fee();
         feeRecord.setDepositAddress(depositAddress);
@@ -65,6 +81,13 @@ public class TransferService {
     }
 
 
+    /**
+     * Transfers the specified amount to the withdrawal addresses.
+     *
+     * @param depositAddress      the deposit address
+     * @param amount              the amount to be transferred
+     * @param withdrawalAddresses the withdrawal addresses
+     */
     private void transferToWithdrawalAddresses(String depositAddress, BigDecimal amount, List<String> withdrawalAddresses) {
         BigDecimal remainingAmount = amount;
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
@@ -86,6 +109,15 @@ public class TransferService {
         executorService.shutdown();
     }
 
+    /**
+     * Transfers the specified amount of Jobcoins from the house address to the withdrawal address.
+     *
+     * @param depositAddress     the deposit address
+     * @param houseAddress       the house address
+     * @param withdrawalAddress  the withdrawal address
+     * @param installmentAmount  the amount of Jobcoins to be transferred
+     */
+
     private void transferJobcoinsToWithdrawalAddress(String depositAddress, String houseAddress,
                                                      String withdrawalAddress, BigDecimal installmentAmount) {
         // Should use SLF4J for logging instead of System.out.println
@@ -95,6 +127,14 @@ public class TransferService {
         updateTransferTable(withdrawalAddress, installmentAmount, TransferStatus.COMPLETED, depositAddress);
     }
 
+    /**
+     * Generates an installment amount for transferring Jobcoins to a withdrawal address.
+     *
+     * @param remainingAmount    the remaining amount to be transferred
+     * @param remainingAddresses the number of remaining withdrawal addresses
+     * @param random             the random number generator
+     * @return the generated installment amount
+     */
     private BigDecimal generateInstallmentAmount(BigDecimal remainingAmount, int remainingAddresses, Random random) {
         if (remainingAddresses == 1) {
             // Return the remaining amount for the last address
@@ -115,6 +155,14 @@ public class TransferService {
         return installmentAmount;
     }
 
+    /**
+     * Updates the transfer table with the details of a transfer.
+     *
+     * @param withdrawalWalletAddress the withdrawal wallet address
+     * @param amount                  the transferred amount
+     * @param status                  the status of the transfer
+     * @param depositAddress          the deposit address
+     */
     private void updateTransferTable(String withdrawalWalletAddress, BigDecimal amount,
                                      TransferStatus status, String depositAddress) {
         Transfer transfer = new Transfer();
@@ -125,6 +173,14 @@ public class TransferService {
         transferRepository.save(transfer);
     }
 
+    /**
+     * Transfers the specified amount of Jobcoins from one address to a deposit address.
+     *
+     * @param from   the address to transfer Jobcoins from
+     * @param to     the deposit address to transfer Jobcoins to
+     * @param amount the amount of Jobcoins to be transferred
+     * @throws DepositNotFoundException if the deposit address is not found
+     */
     public void transferJobcoinsToDepositAddress(String from, String to, BigDecimal amount) {
         // Update the deposit amount for the specified deposit address
         Deposit deposit = depositService.getDepositByAddress(to);
@@ -140,6 +196,12 @@ public class TransferService {
         // For now, we are just logging the transfer details
         System.out.println("Transferred Jobcoins - From: " + from + " To: " + to + " Amount: " + amount);
     }
+
+    /**
+     * Transfers all Jobcoins from the deposits to the house address.
+     *
+     * @return the total amount of Jobcoins transferred to the house address
+     */
 
     public BigDecimal transferToHouseAddress() {
         // Get all the deposits
@@ -162,6 +224,12 @@ public class TransferService {
         return totalAmountTransferred;
     }
 
+    /**
+     * Retrieves the transfer details for a specific deposit address.
+     *
+     * @param depositAddress the deposit address
+     * @return a list of withdrawal details for the specified deposit address
+     */
     public List<WithdrawalDetail> getTransferDetails(String depositAddress) {
         // find all transfers for the deposit address
         List<Transfer> allByDepositAddress = transferRepository.findAllByDepositAddress(depositAddress);

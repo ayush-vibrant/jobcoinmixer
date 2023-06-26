@@ -6,6 +6,9 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Represents a deposit in the Jobcoin mixing application.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,17 +20,9 @@ public class Deposit {
     @Column(name = "deposit_address")
     private String depositAddress;
 
-//    @ElementCollection
-//    @Column(name = "withdrawal_address")
-//    @CollectionTable(name = "withdrawal_addresses", joinColumns = @JoinColumn(name = "deposit_address"))
-//    private List<String> withdrawalAddresses;
-
     @Column(name = "withdrawal_addresses")
     private List<String> withdrawalAddresses;
 
     @Column(name = "amount")
     private BigDecimal amount;
-
 }
-
-

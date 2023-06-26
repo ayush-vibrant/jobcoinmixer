@@ -7,6 +7,10 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 import java.math.BigDecimal;
+
+/**
+ * Represents the house account in the Jobcoin mixing application.
+ */
 @Data
 @Entity
 @Table(name = "house_account")
@@ -17,5 +21,4 @@ public class HouseAccount {
 
     @Column(name = "total_amount")
     private BigDecimal totalAmount;
-
 }

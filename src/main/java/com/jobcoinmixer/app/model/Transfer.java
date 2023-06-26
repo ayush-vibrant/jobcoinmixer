@@ -5,7 +5,9 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
-
+/**
+ * Represents a transfer in the Jobcoin mixing application.
+ */
 @Data
 @Entity
 @Table(name = "transfer_table")
@@ -26,5 +28,4 @@ public class Transfer {
 
     @Column(name = "deposit_address")
     private String depositAddress;
-
 }

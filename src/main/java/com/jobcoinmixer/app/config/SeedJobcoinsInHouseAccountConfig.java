@@ -19,6 +19,12 @@ public class SeedJobcoinsInHouseAccountConfig {
     private ApplicationProperties applicationProperties;
 
     // Ideally in production, we should use Flyway to achieve this
+
+    /**
+     * Initializes the seed amount in the house account during application startup.
+     *
+     * @return a CommandLineRunner that performs the seed data initialization
+     */
     @Bean
     public CommandLineRunner seedData() {
         return args -> {
@@ -40,4 +46,3 @@ public class SeedJobcoinsInHouseAccountConfig {
         };
     }
 }
-

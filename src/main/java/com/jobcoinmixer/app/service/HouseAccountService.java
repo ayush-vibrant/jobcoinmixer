@@ -8,12 +8,21 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
+/**
+ * Service class for managing the house account.
+ */
 @Service
 @AllArgsConstructor
 public class HouseAccountService {
     private final HouseAccountRepository houseAccountRepository;
     private final ApplicationProperties applicationProperties;
 
+    /**
+     * Adds the specified amount to the house account's total amount.
+     *
+     * @param totalAmountTransferred the amount to be added to the house account
+     * @throws java.util.NoSuchElementException if the house account is not found
+     */
     public void addAmountToHouseAccount(BigDecimal totalAmountTransferred) {
         // Fetch the house account from the database
         String houseAddress = applicationProperties.getHouseAddress();
@@ -27,8 +36,4 @@ public class HouseAccountService {
         // Save the updated house account to the database
         houseAccountRepository.save(houseAccount);
     }
-
 }
-
-
-

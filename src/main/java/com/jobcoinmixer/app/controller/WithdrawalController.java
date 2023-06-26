@@ -18,10 +18,21 @@ import java.util.List;
 public class WithdrawalController {
     private final TransferService transferService;
 
+    /**
+     * Constructs a new WithdrawalController with the given TransferService.
+     *
+     * @param transferService the TransferService to be used for initiating withdrawals and retrieving withdrawal details
+     */
     public WithdrawalController(TransferService transferService) {
         this.transferService = transferService;
     }
 
+    /**
+     * Initiates a withdrawal for the specified deposit address.
+     *
+     * @param withdrawalRequest the WithdrawalRequest containing the deposit address for withdrawal
+     * @return a ResponseEntity containing the list of WithdrawalDetail indicating the success of the withdrawal
+     */
     @PutMapping(Paths.WITHDRAW_JOB_COINS)
     public ResponseEntity<List<WithdrawalDetail>> initiateWithdrawal(@RequestBody WithdrawalRequest withdrawalRequest) {
         String depositAddress = withdrawalRequest.getDepositAddress();
