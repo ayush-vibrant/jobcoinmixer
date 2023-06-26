@@ -1,5 +1,6 @@
 package com.jobcoinmixer.app.service;
 
+import com.jobcoinmixer.app.dto.DepositStatus;
 import com.jobcoinmixer.app.model.Deposit;
 import com.jobcoinmixer.app.repository.DepositRepository;
 import lombok.AllArgsConstructor;
@@ -28,7 +29,7 @@ public class DepositService {
         String depositAddress = generateDepositAddress();
 
         // Create a new deposit instance
-        Deposit deposit = new Deposit(depositAddress, withdrawalAddresses, BigDecimal.ZERO);
+        Deposit deposit = new Deposit(depositAddress, withdrawalAddresses, BigDecimal.ZERO, DepositStatus.CREATED);
         deposit.setWithdrawalAddresses(withdrawalAddresses);
 
         // Save the deposit to the database
@@ -66,20 +67,6 @@ public class DepositService {
     }
 
     /**
-     * Calculates the total amount from a list of deposits.
-     *
-     * @param deposits the list of deposits
-     * @return the total amount
-     */
-    public BigDecimal calculateTotalAmount(List<Deposit> deposits) {
-        BigDecimal totalAmount = BigDecimal.ZERO;
-        for (Deposit deposit : deposits) {
-            totalAmount = totalAmount.add(deposit.getAmount());
-        }
-        return totalAmount;
-    }
-
-    /**
      * Retrieves a deposit by its deposit address.
      *
      * @param depositAddress the deposit address
@@ -87,6 +74,14 @@ public class DepositService {
      */
     public Deposit getDepositByAddress(String depositAddress) {
         return depositRepository.findByDepositAddress(depositAddress);
+    }
+
+    public List<Deposit> getDepositsByStatus(DepositStatus status) {
+        return depositRepository.findByStatus(status);
+    }
+
+    public void updateStatusByDepositAddress(String depositAddress, DepositStatus newStatus) {
+        depositRepository.updateStatusByDepositAddress(depositAddress, newStatus);
     }
 
     /**

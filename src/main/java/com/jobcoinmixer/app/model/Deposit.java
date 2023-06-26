@@ -1,5 +1,6 @@
 package com.jobcoinmixer.app.model;
 
+import com.jobcoinmixer.app.dto.DepositStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,4 +26,8 @@ public class Deposit {
 
     @Column(name = "amount")
     private BigDecimal amount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private DepositStatus status;
 }
