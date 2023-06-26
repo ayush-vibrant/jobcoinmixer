@@ -18,6 +18,7 @@ public class SeedJobcoinsInHouseAccountConfig {
     @Autowired
     private ApplicationProperties applicationProperties;
 
+    // Ideally in production, we should use Flyway to achieve this
     @Bean
     public CommandLineRunner seedData() {
         return args -> {
