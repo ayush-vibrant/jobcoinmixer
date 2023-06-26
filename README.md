@@ -26,6 +26,16 @@
 
 ```mvn spring-boot:run```
 
+# How to access H2 in-memory Database
+* Go to http://localhost:8080/h2-console/ and enter the following:
+  * JDBC URL: jdbc:h2:mem:mixerDb
+  * User Name: sa
+  * Password:
+    * Note: Leave the password field blank.
+
+![System Interaction](images/h2_login.png)
+* Once you are logged in, you can run standard MySQL queries to view the data in the database.
+    
 
 
 # User Journey
