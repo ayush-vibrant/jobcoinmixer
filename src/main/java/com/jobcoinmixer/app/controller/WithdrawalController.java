@@ -1,12 +1,12 @@
 package com.jobcoinmixer.app.controller;
 
+import com.jobcoinmixer.app.Paths;
 import com.jobcoinmixer.app.dto.WithdrawalDetail;
 import com.jobcoinmixer.app.dto.WithdrawalRequest;
 import com.jobcoinmixer.app.exception.DepositNotFoundException;
 import com.jobcoinmixer.app.service.TransferService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +22,7 @@ public class WithdrawalController {
         this.transferService = transferService;
     }
 
-    @PutMapping("/withdraw")
+    @PutMapping(Paths.WITHDRAW_JOB_COINS)
     public ResponseEntity<List<WithdrawalDetail>> initiateWithdrawal(@RequestBody WithdrawalRequest withdrawalRequest) {
         String depositAddress = withdrawalRequest.getDepositAddress();
 
@@ -34,6 +34,8 @@ public class WithdrawalController {
 
             // This might be empty. As we send jobcoin to withdrawal addresses with delay.
             // So it might happen that we don't have any transfer details yet.
+
+            // Should use SLF4J for logging instead of System.out.println
             System.out.println("withdrawalDetails: " + withdrawalDetails);
 
             return ResponseEntity.ok(withdrawalDetails);

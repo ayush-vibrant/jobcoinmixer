@@ -1,5 +1,6 @@
 package com.jobcoinmixer.app.controller;
 
+import com.jobcoinmixer.app.Paths;
 import com.jobcoinmixer.app.dto.ApiResponse;
 import com.jobcoinmixer.app.dto.TransferRequest;
 import com.jobcoinmixer.app.service.TransferService;
@@ -18,7 +19,7 @@ public class TransferController {
         this.transferService = transferService;
     }
 
-    @PostMapping("/transfer-to-house-address")
+    @PostMapping(Paths.TRANSFER_TO_HOUSE_ADDRESS)
     public ResponseEntity<ApiResponse> transferToHouseAccount() {
         BigDecimal totalAmountTransferred = transferService.transferToHouseAddress();
 
@@ -27,7 +28,7 @@ public class TransferController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/transfer-to-deposit-address")
+    @PostMapping(Paths.TRANSFER_TO_DEPOSIT_ADDRESS)
     public ResponseEntity<ApiResponse> transferJobcoinsToDepositAddress(@RequestBody TransferRequest transferRequest) {
         String from = transferRequest.getFrom();
         String to = transferRequest.getTo();
